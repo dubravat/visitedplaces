@@ -1,0 +1,15 @@
+body {
+  font-family: "Helvetica", Sans-Serif;
+  background-color: dodgerblue;
+}
+
+#title, #input_text, .information {
+    color: white;
+}
+
+#webmap {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 500px;
+}

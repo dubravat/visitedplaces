@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>VisitedPlaces</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="Taras Dubrava">
+    <meta name="copyright" content="(C) 2024, Taras Dubrava">
+    <meta name="date" content="January 2024">
+    <link rel="stylesheet"  href="{{ url_for('static', filename='styles.css') }}"/>
+    <!-- adding Bowser API browser/platform/engine detector -->
+    <!-- https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browsers -->
+    <script src="https://unpkg.com/bowser/es5.js"></script>
+    <!-- adding MapLibre GL JS and CSS -->
+    <script src="https://tiles.versatiles.org/assets/maplibre/maplibre-gl.js"></script>
+    <link rel="stylesheet" href="https://tiles.versatiles.org/assets/maplibre/maplibre-gl.css"/>
+</head>
+<body>
+    <h1 id="title">Visited Places...</h1>
+    <form action="/" method="POST">
+        <input type="text" name="input_place">
+        <input type="submit" value="Add">
+        <span id="input_text">a place you visited before</span>
+    </form>
+    <br>
+    <!-- adding a container for the web map -->
+    <div id="webmap"></div>
+    {% if countries == 0 %}
+        <p class="information">You have not visited any place yet.</p>
+    {% elif countries == 1 %}
+        <p class="information">Total number of visited places - {{places}} within one country.</p>
+    {% else %}
+        <p class="information">Total number of visited places - {{places}} in {{countries}} different countries.</p>
+    {% endif %}
+
+    <script type="text/javascript">var geojsonfile = {{geojsonfile|tojson}};</script>
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
