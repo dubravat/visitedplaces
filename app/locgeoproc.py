@@ -12,21 +12,30 @@ def truncator(coord: float, prec: int) -> float:
     return float(str(coord)[:str(coord).find('.') + prec + 1])
 
 
-async def get_location(input_loc: str) -> dict:
+async def get_location(input_location: str) -> dict:
+    """
+
+    Parameters:
+    ==========
+    :param input_location: an input from the user
+    Returns:
+    ==========
+    :return:
+    """
     async with Nominatim(user_agent="visitedplaces", timeout=10, adapter_factory=AioHTTPAdapter) as geolocator:
         result = {}
         try:
-            location = await geolocator.geocode(input_loc, language="en", exactly_one=True, addressdetails=True)
+            location = await geolocator.geocode(query=input_location, language="en", exactly_one=True, addressdetails=True)
             if not (location is None):
                 result = {
                     "id": 1,
                     "place": location.raw['address'].get(location.raw['addresstype']),
                     "country": location.raw['address']['country'],
-                    "lat": truncator(location.latitude, 6),
                     "lon": truncator(location.longitude, 6),
+                    "lat": truncator(location.latitude, 6),
                     "created": datetime.now().strftime("%Y-%m-%d")
                 }
         except Exception as e:
-            print('Exception in get_location', e)
+            print(f"Exception in {__name__}", e)
 
         return result

@@ -17,22 +17,30 @@
 <body>
     <h1 id="title">Visited Places...</h1>
     <form action="/" method="POST">
-        <input type="text" name="input_place">
-        <input type="submit" value="Add">
+        <input type="text" name="input_place" id="input_place"/>
+        <input type="submit" value="Add"/>
         <span id="input_text">a place you visited before</span>
     </form>
+
+    <form action="/" method="POST">
+        <input type="submit" name="del_last_place" id="del_last_place" value="Delete the last place"/>
+    </form>
+
     <br>
     <!-- adding a container for the web map -->
     <div id="webmap"></div>
+
+    <!-- text with a counter under the map -->
     {% if countries == 0 %}
         <p class="information">You have not visited any place yet.</p>
     {% elif countries == 1 %}
-        <p class="information">Total number of visited places - {{places}} within one country.</p>
+        <p class="information">Total number of visited places : {{places}} within one country.</p>
     {% else %}
-        <p class="information">Total number of visited places - {{places}} in {{countries}} different countries.</p>
+        <p class="information">Total number of visited places : {{places}} in {{countries}} different countries.</p>
     {% endif %}
 
-    <script type="text/javascript">var geojsonfile = {{geojsonfile|tojson}};</script>
+    <script type="text/javascript">const geojsonfile = {{geojsonfile|tojson}};</script>
+    <script type="text/javascript" src="{{ url_for('static', filename='geojson-bbox.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

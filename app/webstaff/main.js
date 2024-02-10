@@ -1,3 +1,13 @@
+// loading the GeoJSON file
+var geojson = JSON.parse(geojsonfile);
+
+// getting the bbox extent from the GeoJSON file
+// [left, bottom, right, top]
+const gj_extent = bbox(geojson);
+
+// getting the bbox center
+gj_extent_center = [(gj_extent[0] + gj_extent[2])/2, (gj_extent[1] + gj_extent[3])/2];
+
 function isWebGLSupported() {
     if (window.WebGLRenderingContext) {
         const canvas = document.createElement('canvas');
@@ -26,39 +36,74 @@ function isWebGLSupported() {
         alert(msg);
 
     } else {
+
         // console.log('WebGL is working in your Browser')
+
+        // Initiating a map
+        var map = new maplibregl.Map({
+            container: 'webmap', // The HTML element or element's string id in which to render the map
+            style: 'https://tiles.versatiles.org/styles/neutrino.json', // stylesheet location Neutrino - light basemap
+            center: [0, 0], // starting position [lng, lat]
+            zoom: 3, // starting zoom
+            pitch: 10, // starting pitch
+            antialias: true, // MSAA antialiasing
+            validateStyle: true, // style validation
+            collectResourceTiming: true, // Resource Timing API information
+        });
+
+        //
+        let gj_bounds = new maplibregl.LngLatBounds(gj_extent)
+        map.fitBounds(gj_bounds, {
+          padding: {top: 15, bottom:15, left: 10, right: 10}
+        });
+
+        //
+        let nav_control = new maplibregl.NavigationControl({
+            showCompass: true,
+            showZoom: true,
+            visualizePitch: true
+        });
+        map.addControl(nav_control, 'bottom-left');
+        //
+        map.addControl(new maplibregl.FullscreenControl());
+
+        map.on('load', function () {
+
+            map.addSource('places', {
+              type: 'geojson',
+              data: geojson
+            });
+
+            map.addLayer({
+                'id': 'places',
+                'type': 'circle',
+                'source': 'places',
+                'paint': {
+                    'circle-radius': 4,
+                    'circle-color': "#1e90ff",
+                    'circle-stroke-color': "#fff",
+                    'circle-stroke-width': 1
+                    }
+            });
+
+            // Center the map on the coordinates of any clicked symbol from the 'places' layer.
+            map.on('click', 'places', (e) => {
+                map.flyTo({
+                    center: e.features[0].geometry.coordinates
+                });
+            });
+
+            // Change the cursor to a pointer when the it enters a feature in the 'places' layer.
+            map.on('mouseenter', 'places', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'places', () => {
+                map.getCanvas().style.cursor = '';
+            });
+
+        });
     };
 
-var map = new maplibregl.Map({
-    container: 'webmap',
-    style: 'https://tiles.versatiles.org/styles/neutrino.json', // Neutrino - light basemap
-    center: [12.55, 49.89],
-    zoom: 3,
-    pitch: 20
-});
 
-let nav_control = new maplibregl.NavigationControl({
-    showCompass: true,
-    showZoom: true,
-    visualizePitch: true
-});
-
-map.addControl(nav_control, 'bottom-left');
-
-map.on('load', function () {
-    map.addSource('places', {
-      type: 'geojson',
-      data: JSON.parse(geojsonfile)
-    });
-    map.addLayer({
-        'id': 'places-layer',
-        'type': 'circle',
-        'source': 'places',
-        'paint': {
-            'circle-radius': 3,
-            'circle-color': "#088",
-            'circle-stroke-color': "#fff",
-            'circle-stroke-width': 1
-            }
-    });
-});

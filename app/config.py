@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 basedir = abspath(dirname(__file__))
 load_dotenv(join(basedir, '.env'))
 
+
 class Config(object):
     API_KEY = environ.get('API_KEY')
     SECRET_KEY = environ.get('SECRET_KEY')
-
